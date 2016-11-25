@@ -1,4 +1,4 @@
-package org.zouzias.spark.wikipedia
+package org.zouzias.spark.wikipedia.parse
 
 import java.io.ByteArrayInputStream
 
@@ -12,29 +12,9 @@ import org.apache.spark.rdd.RDD
 import org.htmlcleaner.HtmlCleaner
 import org.xml.sax.SAXException
 import org.zouzias.spark.wikipedia.input.WikiInputFormat
+import org.zouzias.spark.wikipedia.models._
 
 object Parser {
-
-  /**
-    * A helper class that allows for a WikiArticle to be serialized and also pulled from the XML parser
-    *
-    * @param page The WikiArticle that is being wrapped
-    */
-  case class WrappedPage(var page: WikiArticle = new WikiArticle) {}
-
-  /**
-    * Represents a parsed Wikipedia page from the Wikipedia XML dump
-    *
-    * https://en.wikipedia.org/wiki/Wikipedia:Database_download
-    * https://meta.wikimedia.org/wiki/Data_dump_torrents#enwiki
-    *
-    * @param title Title of the current page
-    * @param text Text of the current page including markup
-    * @param isCategory Is the page a category page, not perfectly accurate
-    * @param isFile Is the page a file page, not perfectly accurate
-    * @param isTemplate Is the page a template page, not perfectly accurate
-    */
-  case class Page(title: String, text: String, isCategory: Boolean , isFile: Boolean, isTemplate: Boolean)
 
   /**
     * Helper class for parsing wiki XML, parsed pages are set in wrappedPage
@@ -46,48 +26,6 @@ object Parser {
       wrappedPage.page = page
     }
   }
-
-  /**
-    * Represents a redirect from one wiki article title to another
-    *
-    * @param pageTitle Title of the current article
-    * @param redirectTitle Title of the article being redirected to
-    */
-  case class Redirect(pageTitle: String, redirectTitle: String)
-
-  /**
-    * Represent a link from one wiki article to another
-    *
-    * @param pageTitle Title of the current article
-    * @param linkTitle Title of the linked article
-    * @param row Row the link shows on
-    * @param col Column the link shows up on
-    */
-  case class Link(pageTitle: String, linkTitle: String, row: Int, col: Int)
-
-  /**
-    * Represents a click from one wiki article to another.
-    * https://datahub.io/dataset/wikipedia-clickstream
-    * https://meta.wikimedia.org/wiki/Research:Wikipedia_clickstream
-    *
-    * @param prevId Id of the article click originated from if any
-    * @param currId Id of the article the click went to
-    * @param n Number of clicks
-    * @param prevTitle Title of the article click originated from if any
-    * @param currTitle Title of the article the click went to
-    * @param clickType Type of clicks, see documentation for more information
-    */
-  case class Clicks(prevId: String, currId: String, n: Long, prevTitle: String, currTitle: String, clickType: String)
-
-  /**
-    * Represents a page counts on a wikpiedia article
-    * https://wikitech.wikimedia.org/wiki/Analytics/Data/Pagecounts-all-sites
-    *
-    * @param project The project the page view is for (ie: en, en.m, fr, etc.)
-    * @param pageTitle The title of the page
-    * @param views The number of views for the page in this project
-    */
-  case class PageCounts(project: String, pageTitle: String, views: Long)
 
   /**
     * Read page counts data from a directory

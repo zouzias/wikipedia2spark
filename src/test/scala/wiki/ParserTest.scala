@@ -3,7 +3,7 @@ package wiki
 import generic.Spark
 import org.scalatest.FunSuite
 import com.google.common.io.Resources
-import org.zouzias.spark.wikipedia.Parser
+import org.zouzias.spark.wikipedia.parse.Parser
 
 class ParserTest extends FunSuite {
 
